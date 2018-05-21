@@ -1,0 +1,12 @@
+Closed lots:
+
+      description |     bought |       sold | proceeds | cost basis | wash sale |  gain
+100 ASDF (lot 01) | 2018-01-01 | 2018-01-03 |     1498 |       1000 |         0 |   498
+100 ASDF (lot 02) | 2018-01-02 | 2018-01-03 |     1498 |       1200 |         0 |   298
+200 ASDF (lot 03) | 2018-01-04 | 2018-01-05 |     1995 |       4000 |      1003 | -1003
+ 50 ASDF (lot 04) | 2018-01-06 | 2018-01-07 |      745 |       1101 |         0 |  -356
+
+Open lots:
+
+     description |     bought | cost basis
+50 ASDF (lot 04) | 2018-01-06 |       1101
