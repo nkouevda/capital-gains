@@ -15,7 +15,7 @@ Capital gains calculator
 
 optional arguments:
   -h, --help     show this help message and exit
-  --cents        round to nearest cents, not dollars
+  --cents        round to nearest cent, not dollar
   -v, --version  show program's version number and exit
 ```
 

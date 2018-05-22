@@ -1,4 +1,5 @@
 import decimal
+import itertools
 
 
 def round_half_up(value, exponent):
@@ -14,32 +15,52 @@ def format_cents(value):
 
 
 def tabulate_closed_lots(closed_lots, format_decimal):
+  # Group parts of lots that were split (e.g. partially adjusted)
+  # Only group if sold on the same day, and keep gains and losses separate
+  grouped_lots = [list(group) for key, group in itertools.groupby(
+      closed_lots, lambda lot: (
+          lot.index, lot.sell.date, lot.proceeds > lot.cost_basis))]
+
   header = [
       'description',
-      'bought',
+      'acquired',
       'sold',
       'proceeds',
       'cost basis',
       'wash sale',
       'gain']
 
-  return [header] + [[
-      '%s %s (%s)' % (format_decimal(lot.shares), lot.symbol, lot.name),
-      str(lot.buy.date),
-      str(lot.sell.date),
-      format_decimal(lot.proceeds),
-      format_decimal(lot.cost_basis),
-      format_decimal(lot.wash_sale),
-      format_decimal(lot.gain)] for lot in closed_lots]
+  return [header] + [
+      [
+          '%s %s (%s)' % (
+              sum(lot.shares for lot in lots),
+              lots[0].symbol,
+              lots[0].name),
+          str(lots[0].buy.date),
+          str(lots[0].sell.date),
+          format_decimal(sum(lot.proceeds for lot in lots)),
+          format_decimal(sum(lot.cost_basis for lot in lots)),
+          format_decimal(sum(lot.wash_sale for lot in lots)),
+          format_decimal(sum(lot.gain for lot in lots))]
+      for lots in grouped_lots]
 
 
 def tabulate_open_lots(open_lots, format_decimal):
-  header = ['description', 'bought', 'cost basis']
+  # Group parts of lots that were split (e.g. partially adjusted)
+  grouped_lots = [list(group) for index, group in itertools.groupby(
+      open_lots, lambda lot: lot.index)]
 
-  return [header] + [[
-      '%s %s (%s)' % (format_decimal(lot.shares), lot.symbol, lot.name),
-      str(lot.buy.date),
-      format_decimal(lot.cost_basis)] for lot in open_lots]
+  header = ['description', 'acquired', 'cost basis']
+
+  return [header] + [
+      [
+          '%s %s (%s)' % (
+              sum(lot.shares for lot in lots),
+              lots[0].symbol,
+              lots[0].name),
+          str(lots[0].buy.date),
+          format_decimal(sum(lot.cost_basis for lot in lots))]
+      for lots in grouped_lots]
 
 
 def format_table(table):
