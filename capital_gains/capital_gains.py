@@ -111,9 +111,6 @@ def main():
   parser = argument_parser.get_parser()
   args = parser.parse_args()
 
-  format_decimal = (
-      format_util.format_cents if args.cents else format_util.format_dollars)
-
   open_lots, sells = read_transactions(args.filename)
   closed_lots = collections.defaultdict(list)
 
@@ -121,21 +118,51 @@ def main():
     closed_lots[symbol] = process_sells(open_lots[symbol], symbol_sells)
 
   if closed_lots:
-    print('Closed lots:')
+    flattened_closed_lots = list(
+        itertools.chain.from_iterable(closed_lots.values()))
+
+    print('# Closed lots')
     print()
-    flattened_lots = itertools.chain.from_iterable(closed_lots.values())
-    table = format_util.tabulate_closed_lots(flattened_lots, format_decimal)
+    table = format_util.tabulate_closed_lots(
+        flattened_closed_lots,
+        args.decimal_places,
+        args.shares_decimal_places)
     print(format_util.format_table(table))
+
+    if args.totals:
+      print()
+      print('# Closed totals')
+      print()
+      table = format_util.tabulate_closed_totals(
+          flattened_closed_lots,
+          args.decimal_places,
+          args.shares_decimal_places)
+      print(format_util.format_table(table))
 
   if any(open_lots.values()):
     if closed_lots:
       print()
 
-    print('Open lots:')
+    flattened_open_lots = list(
+        itertools.chain.from_iterable(open_lots.values()))
+
+    print('# Open lots')
     print()
-    flattened_lots = itertools.chain.from_iterable(open_lots.values())
-    table = format_util.tabulate_open_lots(flattened_lots, format_decimal)
+    table = format_util.tabulate_open_lots(
+        flattened_open_lots,
+        args.decimal_places,
+        args.shares_decimal_places)
     print(format_util.format_table(table))
+
+    if args.totals:
+      print()
+      print('# Open totals')
+      print()
+      table = format_util.tabulate_open_totals(
+          flattened_open_lots,
+          args.decimal_places,
+          args.shares_decimal_places)
+      print(format_util.format_table(table))
 
 
 if __name__ == '__main__':

@@ -15,9 +15,26 @@ def get_parser():
       metavar='<input file>')
 
   parser.add_argument(
-      '--cents',
+      '-d',
+      '--decimal-places',
+      dest='decimal_places',
+      type=int,
+      default=0,
+      help='round $ to %(metavar)s decimal places; default: %(default)s',
+      metavar='<n>')
+  parser.add_argument(
+      '-s',
+      '--shares-decimal-places',
+      dest='shares_decimal_places',
+      type=int,
+      default=0,
+      help='round shares to %(metavar)s decimal places; default: %(default)s',
+      metavar='<n>')
+  parser.add_argument(
+      '-t',
+      '--totals',
       action='store_true',
-      help='round to nearest cent, not dollar')
+      help='output totals')
   parser.add_argument(
       '-v',
       '--version',

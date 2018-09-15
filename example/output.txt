@@ -1,12 +1,22 @@
-Closed lots:
+# Closed lots
 
-      description |   acquired |       sold | proceeds | cost basis | wash sale |  gain
-100 ASDF (lot 01) | 2018-01-01 | 2018-01-03 |     1498 |       1000 |         0 |   498
-100 ASDF (lot 02) | 2018-01-02 | 2018-01-03 |     1498 |       1200 |         0 |   298
-200 ASDF (lot 03) | 2018-01-04 | 2018-01-05 |     1995 |       4000 |      1003 | -1003
- 50 ASDF (lot 04) | 2018-01-06 | 2018-01-07 |      745 |       1101 |         0 |  -356
+symbol |   name | shares |   acquired |       sold | proceeds | cost basis | wash sale |  gain
+  ASDF | lot 01 |    100 | 2018-01-01 | 2018-01-03 |     1498 |       1000 |         0 |   498
+  ASDF | lot 02 |    100 | 2018-01-02 | 2018-01-03 |     1498 |       1200 |         0 |   298
+  ASDF | lot 03 |    200 | 2018-01-04 | 2018-01-05 |     1995 |       4000 |      1003 | -1003
+  ASDF | lot 04 |     50 | 2018-01-06 | 2018-01-07 |      745 |       1101 |         0 |  -356
 
-Open lots:
+# Closed totals
 
-     description |   acquired | cost basis
-50 ASDF (lot 04) | 2018-01-06 |       1101
+symbol | shares | proceeds | cost basis | gain
+  ASDF |    450 |     5735 |       7301 | -564
+
+# Open lots
+
+symbol |   name | shares |   acquired | cost basis
+  ASDF | lot 04 |     50 | 2018-01-06 |       1101
+
+# Open totals
+
+symbol | shares | estimated proceeds | cost basis | estimated gain
+  ASDF |     50 |                600 |       1101 |           -501

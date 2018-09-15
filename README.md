@@ -14,9 +14,13 @@ usage: capital-gains [<options>] [--] <input file>
 Capital gains calculator
 
 optional arguments:
-  -h, --help     show this help message and exit
-  --cents        round to nearest cent, not dollar
-  -v, --version  show program's version number and exit
+  -h, --help            show this help message and exit
+  -d <n>, --decimal-places <n>
+                        round $ to <n> decimal places; default: 0
+  -s <n>, --shares-decimal-places <n>
+                        round shares to <n> decimal places; default: 0
+  -t, --totals          output totals
+  -v, --version         show program's version number and exit
 ```
 
 ## Input format
@@ -36,13 +40,14 @@ sell all open lots FIFO; a sell with a `name` will only sell lots with the same
 
 Closed lots are tabulated in a format suitable for [form
 8949](https://www.irs.gov/pub/irs-pdf/f8949.pdf), rounded to the nearest dollar
-(use `--cents` to round to the nearest cent).
+(use `-d 2` to round to the nearest cent).
 
-Open lots are also summarized.
+Open lots, and optionally totals for both closed and open lots (use `-t`), are
+also summarized.
 
 ## Examples
 
-    capital-gains example/input.csv > example/output.txt
+    capital-gains -t example/input.csv > example/output.txt
 
 ## License
 

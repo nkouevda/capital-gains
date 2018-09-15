@@ -2,19 +2,12 @@ import decimal
 import itertools
 
 
-def round_half_up(value, exponent):
-  return value.quantize(exponent, rounding=decimal.ROUND_HALF_UP)
+def format_decimal(value, decimal_places):
+  return str(value.quantize(
+      decimal.Decimal('0.1') ** decimal_places, rounding=decimal.ROUND_HALF_UP))
 
 
-def format_dollars(value):
-  return str(round_half_up(value, decimal.Decimal('1')))
-
-
-def format_cents(value):
-  return str(round_half_up(value, decimal.Decimal('1.00')))
-
-
-def tabulate_closed_lots(closed_lots, format_decimal):
+def tabulate_closed_lots(closed_lots, decimal_places, shares_decimal_places):
   # Group parts of lots that were split (e.g. partially adjusted)
   # Only group if sold on the same day, and keep gains and losses separate
   grouped_lots = [list(group) for key, group in itertools.groupby(
@@ -22,7 +15,9 @@ def tabulate_closed_lots(closed_lots, format_decimal):
           lot.index, lot.sell.date, lot.proceeds > lot.cost_basis))]
 
   header = [
-      'description',
+      'symbol',
+      'name',
+      'shares',
       'acquired',
       'sold',
       'proceeds',
@@ -32,35 +27,71 @@ def tabulate_closed_lots(closed_lots, format_decimal):
 
   return [header] + [
       [
-          '%s %s (%s)' % (
-              sum(lot.shares for lot in lots),
-              lots[0].symbol,
-              lots[0].name),
+          lots[0].symbol,
+          lots[0].name or '',
+          format_decimal(sum(lot.shares for lot in lots), shares_decimal_places),
           str(lots[0].buy.date),
           str(lots[0].sell.date),
-          format_decimal(sum(lot.proceeds for lot in lots)),
-          format_decimal(sum(lot.cost_basis for lot in lots)),
-          format_decimal(sum(lot.wash_sale for lot in lots)),
-          format_decimal(sum(lot.gain for lot in lots))]
+          format_decimal(sum(lot.proceeds for lot in lots), decimal_places),
+          format_decimal(sum(lot.cost_basis for lot in lots), decimal_places),
+          format_decimal(sum(lot.wash_sale for lot in lots), decimal_places),
+          format_decimal(sum(lot.gain for lot in lots), decimal_places)]
       for lots in grouped_lots]
 
 
-def tabulate_open_lots(open_lots, format_decimal):
+def tabulate_closed_totals(closed_lots, decimal_places, shares_decimal_places):
+  grouped_lots = [list(group) for symbol, group in itertools.groupby(
+      closed_lots, lambda lot: lot.symbol)]
+
+  table = [['symbol', 'shares', 'proceeds', 'cost basis', 'gain']]
+
+  for lots in grouped_lots:
+    table += [[
+        lots[0].symbol,
+        format_decimal(sum(lot.shares for lot in lots), shares_decimal_places),
+        format_decimal(sum(lot.proceeds for lot in lots), decimal_places),
+        format_decimal(sum(lot.cost_basis for lot in lots), decimal_places),
+        format_decimal(sum(lot.gain for lot in lots), decimal_places)]]
+
+  return table
+
+
+def tabulate_open_lots(open_lots, decimal_places, shares_decimal_places):
   # Group parts of lots that were split (e.g. partially adjusted)
   grouped_lots = [list(group) for index, group in itertools.groupby(
       open_lots, lambda lot: lot.index)]
 
-  header = ['description', 'acquired', 'cost basis']
+  header = ['symbol', 'name', 'shares', 'acquired', 'cost basis']
 
   return [header] + [
       [
-          '%s %s (%s)' % (
-              sum(lot.shares for lot in lots),
-              lots[0].symbol,
-              lots[0].name),
+          lots[0].symbol,
+          lots[0].name or '',
+          format_decimal(sum(lot.shares for lot in lots), shares_decimal_places),
           str(lots[0].buy.date),
-          format_decimal(sum(lot.cost_basis for lot in lots))]
+          format_decimal(sum(lot.cost_basis for lot in lots), decimal_places)]
       for lots in grouped_lots]
+
+
+def tabulate_open_totals(open_lots, decimal_places, shares_decimal_places):
+  grouped_lots = [list(group) for symbol, group in itertools.groupby(
+      open_lots, lambda lot: lot.symbol)]
+
+  table = [['symbol', 'shares', 'estimated proceeds', 'cost basis', 'estimated gain']]
+
+  for lots in grouped_lots:
+    total_shares = sum(lot.shares for lot in lots)
+    estimated_proceeds = total_shares * lots[-1].buy.price
+    total_cost_basis = sum(lot.cost_basis for lot in lots)
+    estimated_gain = estimated_proceeds - total_cost_basis
+    table += [[
+        lots[0].symbol,
+        format_decimal(total_shares, shares_decimal_places),
+        format_decimal(estimated_proceeds, decimal_places),
+        format_decimal(total_cost_basis, decimal_places),
+        format_decimal(estimated_gain, decimal_places)]]
+
+  return table
 
 
 def format_table(table):
