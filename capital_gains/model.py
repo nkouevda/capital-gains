@@ -1,39 +1,40 @@
-import collections
+from dataclasses import dataclass
+from dataclasses import replace
+import datetime
 import decimal
 
 
-BaseTransaction = collections.namedtuple('Transaction', (
-    'index',
-    'date',
-    'symbol',
-    'name',
-    'shares',
-    'price',
-    'fee'))
-
-
-class Transaction(BaseTransaction):
+@dataclass(frozen=True)
+class Transaction(object):
+  index: int
+  date: datetime.datetime
+  symbol: str
+  name: str
+  shares: decimal.Decimal
+  price: decimal.Decimal
+  fee: decimal.Decimal
 
   def split(self, shares):
-    first = self._replace(
+    first = replace(
+        self,
         shares=shares,
         fee=self.fee * shares / self.shares)
 
-    second = self._replace(
+    second = replace(
+        self,
         shares=self.shares - first.shares,
         fee=self.fee - first.fee)
 
     return first, second
 
 
+# Mutable! `adjustment`, `sell`, and `wash_sale` are assigned in main logic
+@dataclass
 class Lot(object):
-
-  def __init__(self, buy):
-    self.buy = buy
-
-    self.adjustment = decimal.Decimal(0)
-    self.sell = None
-    self.wash_sale = decimal.Decimal(0)
+  buy: Transaction
+  adjustment: decimal.Decimal = decimal.Decimal(0)
+  sell: Transaction = None
+  wash_sale: decimal.Decimal = decimal.Decimal(0)
 
   @property
   def index(self):
@@ -70,10 +71,12 @@ class Lot(object):
   def split(self, shares):
     first_buy, second_buy = self.buy.split(shares)
 
-    first_lot = Lot(first_buy)
-    first_lot.adjustment = self.adjustment * shares / self.shares
+    first_lot = Lot(
+        buy=first_buy,
+        adjustment=self.adjustment * shares / self.shares)
 
-    second_lot = Lot(second_buy)
-    second_lot.adjustment = self.adjustment - first_lot.adjustment
+    second_lot = Lot(
+        buy=second_buy,
+        adjustment=self.adjustment - first_lot.adjustment)
 
     return first_lot, second_lot
