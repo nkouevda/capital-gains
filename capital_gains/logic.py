@@ -1,3 +1,6 @@
+import logging
+
+
 def process_sells(open_lots, sells):
   closed_lots = []
 
@@ -20,11 +23,13 @@ def process_sells(open_lots, sells):
         sell, remaining_sell = sell.split(closing_lot.shares)
         sells.insert(0, remaining_sell)
         remaining_shares = abs(sell.shares)
+        logging.debug(f'Split sell: {sell}, {remaining_sell}')
       elif closing_lot.shares > remaining_shares:
         open_index = open_lots.index(closing_lot)
         closing_lot, remaining_lot = closing_lot.split(remaining_shares)
         open_lots[open_index:open_index + 1] = [closing_lot, remaining_lot]
         closable_lots.insert(0, remaining_lot)
+        logging.debug(f'Split lot: {closing_lot}, {remaining_lot}')
 
       closing_lot.sell = sell
       open_lots.remove(closing_lot)
@@ -52,8 +57,11 @@ def process_sells(open_lots, sells):
             adjusting_lot, remaining_lot = adjusting_lot.split(remaining_shares)
             open_lots[open_index:open_index + 1] = [adjusting_lot, remaining_lot]
             adjustable_lots.insert(0, remaining_lot)
+            logging.debug(f'Split lot: {closing_lot}, {remaining_lot}')
 
           adjusting_lot.adjustment = remaining_loss * adjusting_lot.shares / remaining_shares
+          logging.debug(f'Adjusted lot: {adjusting_lot}')
+
           remaining_shares -= adjusting_lot.shares
           remaining_loss -= adjusting_lot.adjustment
 
@@ -61,5 +69,6 @@ def process_sells(open_lots, sells):
             closing_lot.shares - remaining_shares) / closing_lot.shares
 
       closed_lots.append(closing_lot)
+      logging.debug(f'Closed lot: {closing_lot}')
 
   return closed_lots

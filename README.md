@@ -20,10 +20,11 @@ optional arguments:
   -s <n>, --shares-decimal-places <n>
                         round shares to <n> decimal places; default: 0
   -t, --totals          output totals
-  -v, --version         show program's version number and exit
+  -v, --verbose         verbose output
+  -V, --version         show program's version number and exit
 ```
 
-## Input format
+## Input Format
 
 See [example/input.csv](example/input.csv).
 
@@ -36,9 +37,9 @@ always positive. `fee` and `name` are optional. A sell without a `name` will
 sell all open lots FIFO; a sell with a `name` will only sell lots with the same
 `name`. Thus `name` can be used to specify sell orders other than FIFO.
 
-## Output format
+## Output Format
 
-Closed lots are tabulated in a format suitable for [form
+Closed lots are tabulated in a format suitable for [IRS form
 8949](https://www.irs.gov/pub/irs-pdf/f8949.pdf), rounded to the nearest dollar
 (use `-d 2` to round to the nearest cent).
 

@@ -2,6 +2,7 @@ import collections
 import csv
 import datetime
 import decimal
+import logging
 
 from . import model
 
@@ -28,7 +29,9 @@ def load_transactions(filename):
       if shares > 0:
         lot = model.Lot(transaction)
         open_lots[symbol].append(lot)
+        logging.debug(f'Added lot: {lot}')
       else:
         sells[symbol].append(transaction)
+        logging.debug(f'Added sell: {transaction}')
 
   return open_lots, sells

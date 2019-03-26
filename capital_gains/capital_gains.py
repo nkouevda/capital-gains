@@ -1,4 +1,5 @@
 import collections
+import logging
 
 from . import argument_parser
 from . import formatter
@@ -9,6 +10,10 @@ from . import logic
 def main():
   parser = argument_parser.get_parser()
   args = parser.parse_args()
+
+  logging.basicConfig(
+      format='%(asctime)s: %(levelname)s: %(message)s',
+      level=logging.DEBUG if args.verbose else logging.WARNING)
 
   open_lots, sells = loader.load_transactions(args.filename)
   closed_lots = collections.defaultdict(list)
