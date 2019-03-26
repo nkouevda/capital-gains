@@ -2,6 +2,35 @@ import decimal
 import itertools
 
 
+def format(closed_lots, open_lots, decimal_places, shares_decimal_places, totals):
+  output = ''
+
+  if closed_lots:
+    flattened_closed_lots = list(itertools.chain.from_iterable(closed_lots.values()))
+
+    table = tabulate_closed_lots(flattened_closed_lots, decimal_places, shares_decimal_places)
+    output += f'# Closed lots\n\n{format_table(table)}'
+
+    if args.totals:
+      table = tabulate_closed_totals(flattened_closed_lots, decimal_places, shares_decimal_places)
+      output += f'\n\n# Closed totals\n\n{format_table(table)}'
+
+  if any(open_lots.values()):
+    if closed_lots:
+      output += '\n\n'
+
+    flattened_open_lots = list(itertools.chain.from_iterable(open_lots.values()))
+
+    table = tabulate_open_lots(flattened_open_lots, decimal_places, shares_decimal_places)
+    output += f'# Open lots\n\n{format_table(table)}'
+
+    if args.totals:
+      table = tabulate_open_totals(flattened_open_lots, decimal_places, shares_decimal_places)
+      output += f'\n\n# Open totals\n\n{format_table(table)}'
+
+  return output
+
+
 def format_decimal(value, decimal_places):
   return str(value.quantize(
       decimal.Decimal('0.1') ** decimal_places, rounding=decimal.ROUND_HALF_UP))
@@ -11,8 +40,7 @@ def tabulate_closed_lots(closed_lots, decimal_places, shares_decimal_places):
   # Group parts of lots that were split (e.g. partially adjusted)
   # Only group if sold on the same day, and keep gains and losses separate
   grouped_lots = [list(group) for key, group in itertools.groupby(
-      closed_lots, lambda lot: (
-          lot.index, lot.sell.date, lot.proceeds > lot.cost_basis))]
+      closed_lots, lambda lot: (lot.index, lot.sell.date, lot.proceeds > lot.cost_basis))]
 
   header = [
       'symbol',
