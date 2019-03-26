@@ -2,6 +2,18 @@
 
 Capital gains calculator.
 
+This transforms transaction histories into a format suitable for [IRS form
+8949](https://www.irs.gov/pub/irs-pdf/f8949.pdf), taking care of wash sale
+adjustments.
+
+Note: The logic is ignorant of share type, and cannot account for e.g. bargain
+elements for ESPP, ISO, and NSO. You must enter the appropriate cost basis
+depending on your situation, e.g. the fair market value on exercise date for
+ESPP disqualifying dispositions.
+
+See also
+[nkouevda/estimated-taxes](https://github.com/nkouevda/estimated-taxes).
+
 ## Installation
 
     pip install capital-gains
@@ -37,18 +49,13 @@ always positive. `fee` and `name` are optional. A sell without a `name` will
 sell all open lots FIFO; a sell with a `name` will only sell lots with the same
 `name`. Thus `name` can be used to specify sell orders other than FIFO.
 
-## Output Format
-
-Closed lots are tabulated in a format suitable for [IRS form
-8949](https://www.irs.gov/pub/irs-pdf/f8949.pdf), rounded to the nearest dollar
-(use `-d 2` to round to the nearest cent).
-
-Open lots, and optionally totals for both closed and open lots (use `-t`), are
-also summarized.
-
 ## Examples
 
     capital-gains -t example/input.csv > example/output.txt
+
+## TODO
+
+- STCG vs. LTCG
 
 ## License
 

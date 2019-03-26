@@ -11,7 +11,7 @@ def format(closed_lots, open_lots, decimal_places, shares_decimal_places, totals
     table = tabulate_closed_lots(flattened_closed_lots, decimal_places, shares_decimal_places)
     output += f'# Closed lots\n\n{format_table(table)}'
 
-    if args.totals:
+    if totals:
       table = tabulate_closed_totals(flattened_closed_lots, decimal_places, shares_decimal_places)
       output += f'\n\n# Closed totals\n\n{format_table(table)}'
 
@@ -24,7 +24,7 @@ def format(closed_lots, open_lots, decimal_places, shares_decimal_places, totals
     table = tabulate_open_lots(flattened_open_lots, decimal_places, shares_decimal_places)
     output += f'# Open lots\n\n{format_table(table)}'
 
-    if args.totals:
+    if totals:
       table = tabulate_open_totals(flattened_open_lots, decimal_places, shares_decimal_places)
       output += f'\n\n# Open totals\n\n{format_table(table)}'
 
