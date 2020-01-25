@@ -38,7 +38,7 @@ optional arguments:
 
 ## Input Format
 
-See [example/input.csv](example/input.csv).
+See [input/example.csv](input/example.csv).
 
 Each entry has the following format:
 
@@ -51,7 +51,7 @@ sell all open lots FIFO; a sell with a `name` will only sell lots with the same
 
 ## Examples
 
-    capital-gains -t example/input.csv > example/output.txt
+    capital-gains -t input/example.csv > output/example.txt
 
 ## TODO
 
