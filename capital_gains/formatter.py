@@ -39,7 +39,7 @@ def format_decimal(value, decimal_places):
 def tabulate_closed_lots(closed_lots, decimal_places, shares_decimal_places):
   # Group parts of lots that were split (e.g. partially adjusted)
   # Only group if sold on the same day, and keep gains and losses separate
-  grouped_lots = [list(group) for key, group in itertools.groupby(
+  grouped_lots = [list(group) for _, group in itertools.groupby(
       closed_lots, lambda lot: (lot.index, lot.sell.date, lot.proceeds > lot.cost_basis))]
 
   header = [
@@ -68,13 +68,14 @@ def tabulate_closed_lots(closed_lots, decimal_places, shares_decimal_places):
 
 
 def tabulate_closed_totals(closed_lots, decimal_places, shares_decimal_places):
-  grouped_lots = [list(group) for symbol, group in itertools.groupby(
-      closed_lots, lambda lot: lot.symbol)]
+  grouped_lots = [list(group) for _, group in itertools.groupby(
+      closed_lots, lambda lot: (lot.sell.date.year, lot.symbol))]
 
-  table = [['symbol', 'shares', 'proceeds', 'cost basis', 'gain']]
+  table = [['sold', 'symbol', 'shares', 'proceeds', 'cost basis', 'gain']]
 
   for lots in grouped_lots:
     table += [[
+        str(lots[0].sell.date.year),
         lots[0].symbol,
         format_decimal(sum(lot.shares for lot in lots), shares_decimal_places),
         format_decimal(sum(lot.proceeds for lot in lots), decimal_places),
@@ -86,8 +87,7 @@ def tabulate_closed_totals(closed_lots, decimal_places, shares_decimal_places):
 
 def tabulate_open_lots(open_lots, decimal_places, shares_decimal_places):
   # Group parts of lots that were split (e.g. partially adjusted)
-  grouped_lots = [list(group) for index, group in itertools.groupby(
-      open_lots, lambda lot: lot.index)]
+  grouped_lots = [list(group) for _, group in itertools.groupby(open_lots, lambda lot: lot.index)]
 
   header = ['symbol', 'name', 'shares', 'acquired', 'cost basis']
 
@@ -102,8 +102,7 @@ def tabulate_open_lots(open_lots, decimal_places, shares_decimal_places):
 
 
 def tabulate_open_totals(open_lots, decimal_places, shares_decimal_places):
-  grouped_lots = [list(group) for symbol, group in itertools.groupby(
-      open_lots, lambda lot: lot.symbol)]
+  grouped_lots = [list(group) for _, group in itertools.groupby(open_lots, lambda lot: lot.symbol)]
 
   table = [['symbol', 'shares', 'estimated proceeds', 'cost basis', 'estimated gain']]
 
