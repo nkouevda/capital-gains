@@ -18,6 +18,10 @@ See also
 
     pip install capital-gains
 
+Or:
+
+    brew install nkouevda/nkouevda/capital-gains
+
 ## Usage
 
 ```
