@@ -19,7 +19,7 @@ def main():
   closed_lots = collections.defaultdict(list)
 
   for symbol, symbol_sells in sells.items():
-    closed_lots[symbol] = logic.process_sells(open_lots[symbol], symbol_sells)
+    closed_lots[symbol] = logic.process_sells(open_lots[symbol], symbol_sells, args.wash_sales)
 
   output = formatter.format(
       closed_lots,

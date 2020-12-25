@@ -38,6 +38,8 @@ optional arguments:
   -t, --totals          output totals
   -v, --verbose         verbose output
   -V, --version         show program's version number and exit
+  -w, --wash-sales, --no-wash-sales
+                        identify wash sales and adjust cost basis; default: True
 ```
 
 ## Input Format

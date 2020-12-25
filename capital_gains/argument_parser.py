@@ -1,5 +1,7 @@
 import argparse
 
+import argparse_extensions
+
 from . import __version__
 
 
@@ -45,5 +47,12 @@ def get_parser():
       '--version',
       action='version',
       version='%(prog)s ' + __version__)
+  parser.add_argument(
+      '-w',
+      '--wash-sales',
+      dest='wash_sales',
+      action=argparse_extensions.NegatableStoreTrueAction,
+      help='identify wash sales and adjust cost basis; default: %(default)s',
+      default=True)
 
   return parser

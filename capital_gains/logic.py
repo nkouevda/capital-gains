@@ -1,7 +1,7 @@
 import logging
 
 
-def process_sells(open_lots, sells):
+def process_sells(open_lots, sells, wash_sales):
   closed_lots = []
 
   # One sell at a time: first identify all closing lots, then handle wash sales
@@ -56,26 +56,30 @@ def process_sells(open_lots, sells):
         if not adjustable_lots:
           logging.debug(f'Loss of {remaining_loss}; no wash sale')
         else:
-          logging.debug(f'Loss of {remaining_loss}; wash sale; adjusting lots')
+          if not wash_sales:
+            logging.debug(
+                f'Loss of {remaining_loss}; wash sale; not adjusting lots because --no-wash-sales')
+          else:
+            logging.debug(f'Loss of {remaining_loss}; wash sale; adjusting lots')
 
-          while remaining_shares and adjustable_lots:
-            logging.debug(f'Remaining shares to adjust: {remaining_shares}')
-            adjusting_lot = adjustable_lots.pop(0)
+            while remaining_shares and adjustable_lots:
+              logging.debug(f'Remaining shares to adjust: {remaining_shares}')
+              adjusting_lot = adjustable_lots.pop(0)
 
-            # Split adjustable lot if too large
-            if adjusting_lot.shares > remaining_shares:
-              logging.debug(f'Splitting adjustable lot: {adjusting_lot}')
-              open_index = open_lots.index(adjusting_lot)
-              adjusting_lot, remaining_lot = adjusting_lot.split(remaining_shares)
-              open_lots[open_index:open_index + 1] = [adjusting_lot, remaining_lot]
-              adjustable_lots.insert(0, remaining_lot)
-              logging.debug(f'Split adjustable lot into: {adjusting_lot} + {remaining_lot}')
+              # Split adjustable lot if too large
+              if adjusting_lot.shares > remaining_shares:
+                logging.debug(f'Splitting adjustable lot: {adjusting_lot}')
+                open_index = open_lots.index(adjusting_lot)
+                adjusting_lot, remaining_lot = adjusting_lot.split(remaining_shares)
+                open_lots[open_index:open_index + 1] = [adjusting_lot, remaining_lot]
+                adjustable_lots.insert(0, remaining_lot)
+                logging.debug(f'Split adjustable lot into: {adjusting_lot} + {remaining_lot}')
 
-            adjusting_lot.adjustment = remaining_loss * adjusting_lot.shares / remaining_shares
-            logging.debug(f'Adjusted lot: {adjusting_lot}')
+              adjusting_lot.adjustment = remaining_loss * adjusting_lot.shares / remaining_shares
+              logging.debug(f'Adjusted lot: {adjusting_lot}')
 
-            remaining_shares -= adjusting_lot.shares
-            remaining_loss -= adjusting_lot.adjustment
+              remaining_shares -= adjusting_lot.shares
+              remaining_loss -= adjusting_lot.adjustment
 
           if remaining_shares:
             logging.debug(f'Finished adjusting; remaining loss of {remaining_loss} is realized')
