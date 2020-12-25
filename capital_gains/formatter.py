@@ -71,7 +71,7 @@ def tabulate_closed_totals(closed_lots, decimal_places, shares_decimal_places):
   grouped_lots = [list(group) for _, group in itertools.groupby(
       closed_lots, lambda lot: (lot.sell.date.year, lot.symbol))]
 
-  table = [['sold', 'symbol', 'shares', 'proceeds', 'cost basis', 'gain']]
+  table = [['sold', 'symbol', 'shares', 'proceeds', 'cost basis', 'wash sale', 'gain']]
 
   for lots in grouped_lots:
     table += [[
@@ -80,6 +80,7 @@ def tabulate_closed_totals(closed_lots, decimal_places, shares_decimal_places):
         format_decimal(sum(lot.shares for lot in lots), shares_decimal_places),
         format_decimal(sum(lot.proceeds for lot in lots), decimal_places),
         format_decimal(sum(lot.cost_basis for lot in lots), decimal_places),
+        format_decimal(sum(lot.wash_sale for lot in lots), decimal_places),
         format_decimal(sum(lot.gain for lot in lots), decimal_places)]]
 
   return table

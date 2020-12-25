@@ -8,8 +8,8 @@ symbol |   name | shares |   acquired |       sold | proceeds | cost basis | was
 
 # Closed totals
 
-sold | symbol | shares | proceeds | cost basis | gain
-2018 |   ASDF |    450 |     5735 |       7301 | -564
+sold | symbol | shares | proceeds | cost basis | wash sale | gain
+2018 |   ASDF |    450 |     5735 |       7301 |      1003 | -564
 
 # Open lots
 
