@@ -19,9 +19,6 @@ setup(
     author_email='nkouevda@gmail.com',
     license='MIT',
     packages=['capital_gains'],
-    install_requires=[
-        'argparse-extensions',
-    ],
     entry_points={
         'console_scripts': [
             'capital-gains=capital_gains.capital_gains:main',

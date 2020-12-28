@@ -32,14 +32,14 @@ Capital gains calculator
 optional arguments:
   -h, --help            show this help message and exit
   -d <n>, --decimal-places <n>
-                        round $ to <n> decimal places; default: 0
+                        round $ to <n> decimal places (default: 0)
   -s <n>, --shares-decimal-places <n>
-                        round shares to <n> decimal places; default: 0
+                        round shares to <n> decimal places (default: 0)
   -t, --totals          output totals
   -v, --verbose         verbose output
   -V, --version         show program's version number and exit
   -w, --wash-sales, --no-wash-sales
-                        identify wash sales and adjust cost basis; default: True
+                        identify wash sales and adjust cost basis (default: True)
 ```
 
 ## Input Format

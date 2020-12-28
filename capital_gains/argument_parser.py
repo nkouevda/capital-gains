@@ -1,7 +1,5 @@
 import argparse
 
-import argparse_extensions
-
 from . import __version__
 
 
@@ -22,7 +20,7 @@ def get_parser():
       dest='decimal_places',
       type=int,
       default=0,
-      help='round $ to %(metavar)s decimal places; default: %(default)s',
+      help='round $ to %(metavar)s decimal places (default: %(default)s)',
       metavar='<n>')
   parser.add_argument(
       '-s',
@@ -30,7 +28,7 @@ def get_parser():
       dest='shares_decimal_places',
       type=int,
       default=0,
-      help='round shares to %(metavar)s decimal places; default: %(default)s',
+      help='round shares to %(metavar)s decimal places (default: %(default)s)',
       metavar='<n>')
   parser.add_argument(
       '-t',
@@ -51,8 +49,8 @@ def get_parser():
       '-w',
       '--wash-sales',
       dest='wash_sales',
-      action=argparse_extensions.NegatableStoreTrueAction,
-      help='identify wash sales and adjust cost basis; default: %(default)s',
+      action=argparse.BooleanOptionalAction,
+      help='identify wash sales and adjust cost basis',
       default=True)
 
   return parser
