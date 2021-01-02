@@ -1,5 +1,6 @@
 import collections
 import logging
+import sys
 
 from . import argument_parser
 from . import formatter
@@ -29,6 +30,8 @@ def main():
       args.totals)
   print(output)
 
+  return 0
+
 
 if __name__ == '__main__':
-  main()
+  sys.exit(main())

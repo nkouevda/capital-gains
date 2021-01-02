@@ -21,7 +21,7 @@ setup(
     packages=['capital_gains'],
     entry_points={
         'console_scripts': [
-            'capital-gains=capital_gains.capital_gains:main',
+            'capital-gains=capital_gains.__main__:main',
         ],
     },
 )
