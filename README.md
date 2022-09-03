@@ -50,10 +50,17 @@ Each entry has the following format:
 
     date,symbol,name,shares,price,fee
 
-Buys have positive `shares`; sells have negative `shares`. `price` and `fee` are
-always positive. `fee` and `name` are optional. A sell without a `name` will
-sell all open lots FIFO; a sell with a `name` will only sell lots with the same
-`name`. Thus `name` can be used to specify sell orders other than FIFO.
+- `date`: `YYYY-MM-DD` format
+- `name`: optional (can be blank)
+- `shares`: buys have positive `shares`; sells have negative `shares`
+- `price`: non-negative
+- `fee`: non-negative; optional (can be blank)
+
+Entries must be in ascending date order, i.e. oldest first.
+
+A sell without a `name` will sell all open lots FIFO; a sell with a `name` will
+only sell lots with the same `name`. Thus `name` can be used to specify sell
+orders other than FIFO.
 
 ## Examples
 
