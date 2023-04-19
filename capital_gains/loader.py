@@ -9,7 +9,7 @@ from . import model
 
 def load_transactions(filename):
   open_lots = collections.defaultdict(list)
-  sells = collections.defaultdict(list)
+  sales = collections.defaultdict(list)
 
   with open(filename, 'r') as in_file:
     reader = csv.reader(in_file)
@@ -31,7 +31,7 @@ def load_transactions(filename):
         open_lots[symbol].append(lot)
         logging.debug(f'Added lot: {lot}')
       else:
-        sells[symbol].append(transaction)
-        logging.debug(f'Added sell: {transaction}')
+        sales[symbol].append(transaction)
+        logging.debug(f'Added sale: {transaction}')
 
-  return open_lots, sells
+  return open_lots, sales

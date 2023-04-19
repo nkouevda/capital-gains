@@ -1,32 +1,32 @@
 import logging
 
 
-def process_sells(open_lots, sells, wash_sales):
+def process_sales(open_lots, sales, wash_sales):
   closed_lots = []
 
-  # One sell at a time: first identify all closing lots, then handle wash sales
-  while sells:
-    sell = sells.pop(0)
-    remaining_shares = abs(sell.shares)
-    logging.debug(f'Processing sell: {sell}')
+  # One sale at a time: first identify all closing lots, then handle wash sales
+  while sales:
+    sale = sales.pop(0)
+    remaining_shares = abs(sale.shares)
+    logging.debug(f'Processing sale: {sale}')
 
     closable_lots = [
         lot for lot in open_lots
-        if lot.index < sell.index
-        and (sell.name is None or lot.name == sell.name)]
+        if lot.index < sale.index
+        and (sale.name is None or lot.name == sale.name)]
     closing_lots = []
 
     while remaining_shares:
       closing_lot = closable_lots.pop(0)
       logging.debug(f'Closing lot: {closing_lot}')
 
-      # Split sell if lot is too small, or vice versa
+      # Split sale if lot is too small, or vice versa
       if closing_lot.shares < remaining_shares:
-        logging.debug(f'Splitting sell: {sell}')
-        sell, remaining_sell = sell.split(closing_lot.shares)
-        sells.insert(0, remaining_sell)
-        remaining_shares = abs(sell.shares)
-        logging.debug(f'Split sell into: {sell} + {remaining_sell}')
+        logging.debug(f'Splitting sale: {sale}')
+        sale, remaining_sale = sale.split(closing_lot.shares)
+        sales.insert(0, remaining_sale)
+        remaining_shares = abs(sale.shares)
+        logging.debug(f'Split sale into: {sale} + {remaining_sale}')
       elif closing_lot.shares > remaining_shares:
         logging.debug(f'Splitting closing lot: {closing_lot}')
         open_index = open_lots.index(closing_lot)
@@ -35,7 +35,7 @@ def process_sells(open_lots, sells, wash_sales):
         closable_lots.insert(0, remaining_lot)
         logging.debug(f'Split closing lot into: {closing_lot} + {remaining_lot}')
 
-      closing_lot.sell = sell
+      closing_lot.sale = sale
       open_lots.remove(closing_lot)
       closing_lots.append(closing_lot)
       remaining_shares -= closing_lot.shares
@@ -48,7 +48,7 @@ def process_sells(open_lots, sells, wash_sales):
 
         adjustable_lots = [
             lot for lot in open_lots
-            if (abs((lot.buy.date - closing_lot.sell.date).days) <= 30
+            if (abs((lot.purchase.date - closing_lot.sale.date).days) <= 30
                 and lot.index != closing_lot.index
                 and lot.name != closing_lot.name
                 and lot.adjustment == 0)]

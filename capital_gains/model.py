@@ -28,39 +28,39 @@ class Transaction(object):
     return first, second
 
 
-# Mutable! `adjustment`, `sell`, and `wash_sale` are assigned in main logic
+# Mutable! `adjustment`, `sale`, and `wash_sale` are assigned in main logic
 @dataclass
 class Lot(object):
-  buy: Transaction
+  purchase: Transaction
   adjustment: decimal.Decimal = decimal.Decimal(0)
-  sell: Transaction = None
+  sale: Transaction = None
   wash_sale: decimal.Decimal = decimal.Decimal(0)
 
   @property
   def index(self):
-    return self.buy.index
+    return self.purchase.index
 
   @property
   def symbol(self):
-    return self.buy.symbol
+    return self.purchase.symbol
 
   @property
   def name(self):
-    return self.buy.name
+    return self.purchase.name
 
   @property
   def shares(self):
-    return self.buy.shares
+    return self.purchase.shares
 
   @property
   def cost_basis(self):
-    return self.shares * self.buy.price + self.buy.fee + self.adjustment
+    return self.shares * self.purchase.price + self.purchase.fee + self.adjustment
 
   @property
   def proceeds(self):
-    if self.sell is None:
+    if self.sale is None:
       return None
-    return self.shares * self.sell.price - self.sell.fee
+    return self.shares * self.sale.price - self.sale.fee
 
   @property
   def gain(self):
@@ -69,14 +69,14 @@ class Lot(object):
     return self.proceeds - self.cost_basis + self.wash_sale
 
   def split(self, shares):
-    first_buy, second_buy = self.buy.split(shares)
+    first_purchase, second_purchase = self.purchase.split(shares)
 
     first_lot = Lot(
-        buy=first_buy,
+        purchase=first_purchase,
         adjustment=self.adjustment * shares / self.shares)
 
     second_lot = Lot(
-        buy=second_buy,
+        purchase=second_purchase,
         adjustment=self.adjustment - first_lot.adjustment)
 
     return first_lot, second_lot
