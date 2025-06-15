@@ -29,14 +29,14 @@ usage: capital-gains [<options>] [--] <input file>
 
 Capital gains calculator
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
-  -d <n>, --decimal-places <n>
+  -d, --decimal-places <n>
                         round $ to <n> decimal places (default: 0)
-  -s <n>, --shares-decimal-places <n>
+  -s, --shares-decimal-places <n>
                         round shares to <n> decimal places (default: 0)
-  -t, --totals          output totals
-  -v, --verbose         verbose output
+  -t, --totals          output totals (default: False)
+  -v, --verbose         verbose output (default: False)
   -V, --version         show program's version number and exit
   -w, --wash-sales, --no-wash-sales
                         identify wash sales and adjust cost basis (default: True)
