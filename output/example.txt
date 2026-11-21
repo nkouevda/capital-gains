@@ -19,4 +19,4 @@ symbol |   name | shares |   acquired | cost basis
 # Open totals
 
 symbol | shares | estimated proceeds | cost basis | estimated gain
-  ASDF |     50 |                600 |       1101 |           -501
+  ASDF |     50 |                750 |       1101 |           -351

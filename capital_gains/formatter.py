@@ -27,7 +27,13 @@ def format(closed_lots, open_lots, decimal_places, shares_decimal_places, totals
         output += f"# Open lots\n\n{format_table(table)}"
 
         if totals:
-            table = tabulate_open_totals(flattened_open_lots, decimal_places, shares_decimal_places)
+            latest_prices = get_latest_prices(closed_lots, open_lots)
+            table = tabulate_open_totals(
+                flattened_open_lots,
+                latest_prices,
+                decimal_places,
+                shares_decimal_places,
+            )
             output += f"\n\n# Open totals\n\n{format_table(table)}"
 
     return output
@@ -119,7 +125,7 @@ def tabulate_open_lots(open_lots, decimal_places, shares_decimal_places):
     ]
 
 
-def tabulate_open_totals(open_lots, decimal_places, shares_decimal_places):
+def tabulate_open_totals(open_lots, latest_prices, decimal_places, shares_decimal_places):
     grouped_lots = [
         list(group) for _, group in itertools.groupby(open_lots, lambda lot: lot.symbol)
     ]
@@ -128,7 +134,7 @@ def tabulate_open_totals(open_lots, decimal_places, shares_decimal_places):
 
     for lots in grouped_lots:
         total_shares = sum(lot.shares for lot in lots)
-        estimated_proceeds = total_shares * lots[-1].purchase.price
+        estimated_proceeds = total_shares * latest_prices[lots[0].symbol]
         total_cost_basis = sum(lot.cost_basis for lot in lots)
         estimated_gain = estimated_proceeds - total_cost_basis
         table += [
@@ -150,3 +156,18 @@ def format_table(table):
     return "\n".join(
         " | ".join(value.rjust(width) for value, width in zip(row, widths)) for row in table
     )
+
+
+def get_latest_prices(closed_lots, open_lots):
+    latest_prices = {}
+
+    for symbol in open_lots:
+        latest_open_lot = max(open_lots[symbol], key=lambda lot: lot.purchase.date)
+        latest_prices[symbol] = latest_open_lot.purchase.price
+
+        if symbol in closed_lots:
+            latest_closed_lot = max(closed_lots[symbol], key=lambda lot: lot.sale.date)
+            if latest_closed_lot.sale.date > latest_open_lot.purchase.date:
+                latest_prices[symbol] = latest_closed_lot.sale.price
+
+    return latest_prices
