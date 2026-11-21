@@ -1,5 +1,7 @@
 import logging
 
+logger = logging.getLogger(__name__)
+
 
 def process_sales(open_lots, sales, wash_sales):
     closed_lots = []
@@ -8,7 +10,7 @@ def process_sales(open_lots, sales, wash_sales):
     while sales:
         sale = sales.pop(0)
         remaining_shares = abs(sale.shares)
-        logging.debug(f"Processing sale: {sale}")
+        logger.debug(f"Processing sale: {sale}")
 
         closable_lots = [
             lot
@@ -19,22 +21,22 @@ def process_sales(open_lots, sales, wash_sales):
 
         while remaining_shares:
             closing_lot = closable_lots.pop(0)
-            logging.debug(f"Closing lot: {closing_lot}")
+            logger.debug(f"Closing lot: {closing_lot}")
 
             # Split sale if lot is too small, or vice versa
             if closing_lot.shares < remaining_shares:
-                logging.debug(f"Splitting sale: {sale}")
+                logger.debug(f"Splitting sale: {sale}")
                 sale, remaining_sale = sale.split(closing_lot.shares)
                 sales.insert(0, remaining_sale)
                 remaining_shares = abs(sale.shares)
-                logging.debug(f"Split sale into: {sale} + {remaining_sale}")
+                logger.debug(f"Split sale into: {sale} + {remaining_sale}")
             elif closing_lot.shares > remaining_shares:
-                logging.debug(f"Splitting closing lot: {closing_lot}")
+                logger.debug(f"Splitting closing lot: {closing_lot}")
                 open_index = open_lots.index(closing_lot)
                 closing_lot, remaining_lot = closing_lot.split(remaining_shares)
                 open_lots[open_index : open_index + 1] = [closing_lot, remaining_lot]
                 closable_lots.insert(0, remaining_lot)
-                logging.debug(f"Split closing lot into: {closing_lot} + {remaining_lot}")
+                logger.debug(f"Split closing lot into: {closing_lot} + {remaining_lot}")
 
             closing_lot.sale = sale
             open_lots.remove(closing_lot)
@@ -59,22 +61,22 @@ def process_sales(open_lots, sales, wash_sales):
                 ]
 
                 if not adjustable_lots:
-                    logging.debug(f"Loss of {remaining_loss}; no wash sale")
+                    logger.debug(f"Loss of {remaining_loss}; no wash sale")
                 else:
                     if not wash_sales:
-                        logging.debug(
+                        logger.debug(
                             f"Loss of {remaining_loss}; wash sale; not adjusting lots because --no-wash-sales"
                         )
                     else:
-                        logging.debug(f"Loss of {remaining_loss}; wash sale; adjusting lots")
+                        logger.debug(f"Loss of {remaining_loss}; wash sale; adjusting lots")
 
                         while remaining_shares and adjustable_lots:
-                            logging.debug(f"Remaining shares to adjust: {remaining_shares}")
+                            logger.debug(f"Remaining shares to adjust: {remaining_shares}")
                             adjusting_lot = adjustable_lots.pop(0)
 
                             # Split adjustable lot if too large
                             if adjusting_lot.shares > remaining_shares:
-                                logging.debug(f"Splitting adjustable lot: {adjusting_lot}")
+                                logger.debug(f"Splitting adjustable lot: {adjusting_lot}")
                                 open_index = open_lots.index(adjusting_lot)
                                 adjusting_lot, remaining_lot = adjusting_lot.split(remaining_shares)
                                 open_lots[open_index : open_index + 1] = [
@@ -82,20 +84,20 @@ def process_sales(open_lots, sales, wash_sales):
                                     remaining_lot,
                                 ]
                                 adjustable_lots.insert(0, remaining_lot)
-                                logging.debug(
+                                logger.debug(
                                     f"Split adjustable lot into: {adjusting_lot} + {remaining_lot}"
                                 )
 
                             adjusting_lot.adjustment = (
                                 remaining_loss * adjusting_lot.shares / remaining_shares
                             )
-                            logging.debug(f"Adjusted lot: {adjusting_lot}")
+                            logger.debug(f"Adjusted lot: {adjusting_lot}")
 
                             remaining_shares -= adjusting_lot.shares
                             remaining_loss -= adjusting_lot.adjustment
 
                     if remaining_shares:
-                        logging.debug(
+                        logger.debug(
                             f"Finished adjusting; remaining loss of {remaining_loss} is realized"
                         )
 
@@ -106,6 +108,6 @@ def process_sales(open_lots, sales, wash_sales):
                 )
 
             closed_lots.append(closing_lot)
-            logging.debug(f"Closed lot: {closing_lot}")
+            logger.debug(f"Closed lot: {closing_lot}")
 
     return closed_lots

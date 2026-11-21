@@ -5,7 +5,7 @@ from dataclasses import replace
 
 
 @dataclass(frozen=True)
-class Transaction(object):
+class Transaction:
     index: int
     date: datetime.datetime
     symbol: str
@@ -32,7 +32,7 @@ class Transaction(object):
 
 # Mutable! `adjustment`, `sale`, and `wash_sale` are assigned in main logic
 @dataclass
-class Lot(object):
+class Lot:
     purchase: Transaction
     adjustment: decimal.Decimal = decimal.Decimal(0)
     sale: Transaction = None

@@ -6,6 +6,8 @@ import logging
 
 from . import model
 
+logger = logging.getLogger(__name__)
+
 
 def load_transactions(filename):
     open_lots = collections.defaultdict(list)
@@ -29,9 +31,9 @@ def load_transactions(filename):
             if shares > 0:
                 lot = model.Lot(transaction)
                 open_lots[symbol].append(lot)
-                logging.debug(f"Added lot: {lot}")
+                logger.debug(f"Added lot: {lot}")
             else:
                 sales[symbol].append(transaction)
-                logging.debug(f"Added sale: {transaction}")
+                logger.debug(f"Added sale: {transaction}")
 
     return open_lots, sales
